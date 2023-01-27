@@ -3,7 +3,7 @@ from utils import recursive_scan2df, ProcessVideos
 
 
 def main() -> None:
-    folder = "/media/martin/Samsung_T5/data/endoscopic_data/10s_video"
+    folder = "/nfs/home/mhuber/data/endoscopic_data/heichole/Videos/Full_SD"
     videos_df = recursive_scan2df(folder, ".mp4")
     videos = [os.path.join(folder, row.folder, row.file) for _, row in videos_df.iterrows()]
     print(videos)
