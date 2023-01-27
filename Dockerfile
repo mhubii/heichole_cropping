@@ -9,9 +9,10 @@ RUN groupadd --gid $GROUP_ID $USER
 RUN useradd --uid $USER_ID --gid $GROUP_ID $USER
 
 # Install tmux
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install apt-utils -y
-RUN apt-get install tmux
+RUN apt-get install -y apt-utils
+RUN apt-get install -y tmux
 
 # Create conda env 
 WORKDIR /workspace
