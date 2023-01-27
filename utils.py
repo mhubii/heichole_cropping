@@ -1,6 +1,10 @@
+import numpy as np
+import cv2
+import os
 from typing import List
 
-import cv2
+import torch
+from torchcontentarea import estimate_area_learned
 import pandas as pd
 
 
@@ -20,9 +24,25 @@ def recursive_scan2df(folder: str, postfix: str = ".jpg") -> pd.DataFrame:
     return df
 
 
-class ProcessVideos(object):
+class ProcessVideos():
     def __init__(self, video_files: List[str]) -> None:
-        pass
+        self.captures = [cv2.VideoCapture(video_file) for video_file in video_files]
 
-    def __call__(self):
-        pass
+    def run(self):
+        for capture in self.captures:
+            while True:
+                ret, frame = capture.read()
+                if ret:
+                    self.process(frame)
+                else:
+                    break
+            capture.release()
+
+
+    def process(self, frame: np.ndarray) -> None:
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = torch.from_numpy(frame).permute(2, 0, 1).unsqueeze(0).float() / 255.
+        
+        area = estimate_area_learned(frame)
+        # cv2.imshow("frame", frame)
+        # cv2.waitKey(1)
