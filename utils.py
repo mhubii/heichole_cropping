@@ -7,6 +7,8 @@ import torch
 from torchcontentarea import estimate_area_learned
 import pandas as pd
 
+from crop import crop_area
+
 
 def recursive_scan2df(folder: str, postfix: str = ".jpg") -> pd.DataFrame:
     # scan folder for images and return dataframe
@@ -24,7 +26,7 @@ def recursive_scan2df(folder: str, postfix: str = ".jpg") -> pd.DataFrame:
     return df
 
 
-class ProcessVideos():
+class ProcessVideos:
     def __init__(self, video_files: List[str]) -> None:
         self.captures = [cv2.VideoCapture(video_file) for video_file in video_files]
 
@@ -38,11 +40,11 @@ class ProcessVideos():
                     break
             capture.release()
 
-
     def process(self, frame: np.ndarray) -> None:
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = torch.from_numpy(frame).permute(2, 0, 1).unsqueeze(0).float() / 255.
-        
+        frame = torch.from_numpy(frame).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+
         area = estimate_area_learned(frame)
+        cropped_frame = crop_area(area, frame)
         # cv2.imshow("frame", frame)
         # cv2.waitKey(1)
