@@ -5,4 +5,5 @@ runai submit heichole-cropping \
   --interactive \
   -v /nfs:/nfs \
   --large-shm \
+  --run-as-user \
   -- sleep infinity
