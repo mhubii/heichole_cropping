@@ -41,7 +41,7 @@ class ProcessVideos():
 
     def process(self, frame: np.ndarray) -> None:
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = torch.from_numpy(frame).permute(2, 0, 1).unsqueeze(0).float() / 255.
+        frame = torch.from_numpy(frame).permute(2, 0, 1).unsqueeze(0)
         
         area = estimate_area_learned(frame)
         # cv2.imshow("frame", frame)
