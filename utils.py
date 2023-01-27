@@ -1,4 +1,6 @@
-# import torchcontentarea
+from typing import List
+
+import cv2
 import pandas as pd
 
 
@@ -16,3 +18,11 @@ def recursive_scan2df(folder: str, postfix: str = ".jpg") -> pd.DataFrame:
             ]
             df = df.append(dic_list, ignore_index=True)
     return df
+
+
+class ProcessVideos(object):
+    def __init__(self, video_files: List[str]) -> None:
+        pass
+
+    def __call__(self):
+        pass

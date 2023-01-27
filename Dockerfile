@@ -8,6 +8,11 @@ ARG USER
 RUN groupadd --gid $GROUP_ID $USER
 RUN useradd --uid $USER_ID --gid $GROUP_ID $USER
 
+# Install tmux
+RUN apt-get update
+RUN apt-get install apt-utils -y
+RUN apt-get install tmux
+
 # Create conda env 
 WORKDIR /workspace
 COPY requirements.txt .
