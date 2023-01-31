@@ -91,7 +91,7 @@ class ProcessVideos:
     def process(self, frame: np.ndarray) -> Tuple[np.ndarray, bool]:
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = torch.from_numpy(frame).permute(2, 0, 1).unsqueeze(0)
-        if frame.count_nonzero().item() == 0:
+        if (frame - 255).count_nonzero().item() == 0:
             # video censored
             return frame, False
 
