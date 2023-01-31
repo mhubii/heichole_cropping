@@ -91,9 +91,16 @@ class ProcessVideos:
     def process(self, frame: np.ndarray) -> Tuple[np.ndarray, bool]:
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         frame = torch.from_numpy(frame).permute(2, 0, 1).unsqueeze(0)
+        if frame.count_nonzero().item() == 0:
+            # video censored
+            return frame, False
+
         area = estimate_area_learned(frame)
         if area.count_nonzero().item() == 0:
-            return frame, False
+            # no circle found (return entire frame)
+            frame = frame.squeeze().permute(1, 2, 0).numpy()
+            frame = cv2.resize(frame, self.shape)
+            return frame, True
 
         cropped_frame = crop_area(area.squeeze(), frame, aspect_ratio=self.aspect_ratio)
 
