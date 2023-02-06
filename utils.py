@@ -41,6 +41,7 @@ class ProcessVideos:
         output_path: str,
         shape: Tuple[int] = (320, 240),
         aspect_ratio: float = 4.0 / 3.0,
+        device="cuda",
     ) -> None:
         self.video_files = video_files
         self.video_names = [
@@ -50,6 +51,7 @@ class ProcessVideos:
         self.output_path = output_path
         self.shape = shape
         self.aspect_ratio = aspect_ratio
+        self.device = device
 
     def run(self, processes: int = 1):
         process_pool = Pool(processes)
@@ -90,7 +92,7 @@ class ProcessVideos:
 
     def process(self, frame: np.ndarray) -> Tuple[np.ndarray, bool]:
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = torch.from_numpy(frame).permute(2, 0, 1).unsqueeze(0)
+        frame = torch.from_numpy(frame).permute(2, 0, 1).unsqueeze(0).to(self.device)
         if (frame - 255).count_nonzero().item() == 0:
             # video censored
             return frame, False
@@ -104,7 +106,7 @@ class ProcessVideos:
 
         cropped_frame = crop_area(area.squeeze(), frame, aspect_ratio=self.aspect_ratio)
 
-        cropped_frame = cropped_frame.squeeze().permute(1, 2, 0).numpy()
+        cropped_frame = cropped_frame.squeeze().permute(1, 2, 0).cpu().numpy()
         cropped_frame = cv2.resize(cropped_frame, self.shape)
 
         return cropped_frame, True
