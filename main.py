@@ -9,7 +9,7 @@ def main() -> None:
     print(videos)
 
     process_videos = ProcessVideos(videos, "/nfs/home/mhuber/data/endoscopic_data/heichole_single_frames_cropped_new")
-    process_videos.run(processes=1)
+    process_videos.run(processes=8)
 
 if __name__ == "__main__":
     main()
