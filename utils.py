@@ -95,12 +95,12 @@ class ProcessVideos:
         frame = torch.from_numpy(frame).permute(2, 0, 1).unsqueeze(0).to(self.device)
         if (frame - 255).count_nonzero().item() == 0:
             # video censored
-            return frame, False
+            return frame.squeeze().permute(1, 2, 0).cpu().numpy(), False
 
         area = estimate_area_learned(frame)
         if area.count_nonzero().item() == 0:
             # no circle found (return entire frame)
-            frame = frame.squeeze().permute(1, 2, 0).numpy()
+            frame = frame.squeeze().permute(1, 2, 0).cpu().numpy()
             frame = cv2.resize(frame, self.shape)
             return frame, True
 
