@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 import pandas as pd
 import torch
+from sklearn.model_selection import train_test_split
 from torchcontentarea import estimate_area_learned
 
 from crop import crop_area
@@ -25,6 +26,44 @@ def recursive_scan2df(folder: str, postfix: str = ".jpg") -> pd.DataFrame:
                 for x in files
             ]
             df = df.append(dic_list, ignore_index=True)
+    return df
+
+
+def unique_video_train_test(
+    df: pd.DataFrame,
+    train_split: float = 0.8,
+    tolerance: float = 0.05,
+    random_state: int = 42,
+):
+    r"""Splits videos into train and test set.
+
+    Args:
+        df (pd.DataFrame): Pandas dataframe, must contain {'folder': , 'file': , 'vid': , 'frame': }
+        train_split (float): Fraction of train data, default 0.8
+        tolerance (float): Split tolerance, train_split + tolerance <= len(df[df.train] == False)/len(df) <= train_split + tolerance
+        random_state (int): Random state for deterministic splitting
+
+    Return:
+        df (pd.DataFrame): Pandas dataframe, contain {'folder': , 'file': , 'vid': , 'frame': , 'train': }
+    """
+    # find unique videos
+    unique_vid = df.vid.unique()
+
+    _, test_vid = train_test_split(
+        unique_vid, train_size=train_split, random_state=random_state
+    )
+
+    df["train"] = True
+    df.loc[df.vid.isin(test_vid), "train"] = False
+
+    # assert if fraction off
+    fraction = len(df[df.train == False]) / len(df)
+    assert np.isclose(
+        fraction, 1 - train_split, atol=tolerance
+    ), "Train set fraction {:.3f} not close enough to (1 - train_split) {} at tolerance {}".format(
+        fraction, 1 - train_split, tolerance
+    )
+
     return df
 
 
@@ -105,6 +144,8 @@ class ProcessVideos:
             return frame, True
 
         cropped_frame = crop_area(area.squeeze(), frame, aspect_ratio=self.aspect_ratio)
+        print(area)
+        print(cropped_frame.shape)
 
         cropped_frame = cropped_frame.squeeze().permute(1, 2, 0).cpu().numpy()
         cropped_frame = cv2.resize(cropped_frame, self.shape)
