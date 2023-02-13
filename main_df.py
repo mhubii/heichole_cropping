@@ -9,9 +9,9 @@ def process() -> None:
     print(frames_df)
 
     # add video number
-    frames_df["vid"] = frames_df.folder.apply(
-        lambda x: x.replace("Hei-Chole", "").split("/")[0]
-    )
+    frames_df["vid"] = 0
+    for i, folder_i in enumerate(frames_df.folder.unique()):
+        frames_df.loc[frames_df.folder == folder_i, "vid"] = i
     print(frames_df)
 
     frames_df.to_csv(os.path.join(folder, "log.csv"))
