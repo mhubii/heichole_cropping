@@ -14,6 +14,9 @@ def process() -> None:
         frames_df.loc[frames_df.folder == folder_i, "vid"] = i
     print(frames_df)
 
+    # add frame number
+    frames_df["frame"] = frames_df.file.apply(lambda x: x.split(".")[0].split("_")[-1])
+
     frames_df.to_csv(os.path.join(folder, "log.csv"))
     frames_df.to_pickle(os.path.join(folder, "log.pkl"))
 
