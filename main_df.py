@@ -20,7 +20,7 @@ def process() -> None:
     frames_df.to_csv(os.path.join(folder, "log.csv"))
     frames_df.to_pickle(os.path.join(folder, "log.pkl"))
 
-    test_train_frames_df = unique_video_train_test(frames_df)
+    test_train_frames_df = unique_video_train_test(frames_df, tolerance=0.01)
     print(test_train_frames_df)
     test_train_frames_df.to_csv(os.path.join(folder, "log_test_train.csv"))
     test_train_frames_df.to_pickle(os.path.join(folder, "log_test_train.pkl"))
